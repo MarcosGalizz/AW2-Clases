@@ -15,10 +15,10 @@ const servidor = http.createServer((peticion, respuesta) => {
         return respuesta.end("Hola que tal")// Última línea    
     }// La misma ruta pero con distinto método.
 
-    respuesta.statusCode = 404
-    return respuesta.end("Página no encontrada")
+    respuesta.statusCode = 404 // Propiedad
+    return respuesta.end("Página no encontrada") // Método
 })
-
+// Abrimos un server y lo ponemos a escuchar. Se ejecuta solo una vez.
 servidor.listen(3000, () => {
     console.log("Servidor arrancado")
 })
