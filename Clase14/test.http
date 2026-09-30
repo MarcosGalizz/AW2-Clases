@@ -1,0 +1,6 @@
+### GET todos los pokemones
+
+GET https://pokeapi.co/api/v2/pokemon/
+
+### GET a un pokemon en particular
+GET https://pokeapi.co/api/v2/pokemon/ditto
