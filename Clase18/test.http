@@ -1,0 +1,20 @@
+### GET todos los productos
+GET http://localhost:3000/api/v1/productos
+
+
+### GET de un producto
+GET http://localhost:3000/api/v1/productos/:1
+
+
+### DELETE de un producto
+DELETE http://localhost:3000/api/v1/productos/:1
+
+
+### POST de un producto
+POST http://localhost:3000/api/v1/productos
+Content-Type: application/json
+
+{
+    "producto": "remera",
+    "precio": 10
+}
