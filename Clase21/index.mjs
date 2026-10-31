@@ -4,8 +4,9 @@ import path from 'node:path'
 import cookieParser from 'cookie-parser'
 import bcrypt from "bcryptjs";
 import pool from './conexion.bd.mjs';
-// nanoId
+import {nanoid} from 'nanoid'
 
+dotenv.config()
 const PUERTO = 3000
 const app = express()
 
@@ -24,8 +25,11 @@ app.post('/autenticacion', async (req,res)=>{
     if(verificado){
         // Creamos la cookie
         // Guardar en la tabla el sesionId
-        //const sesionId = nanoid(10)
-        res.cookie('sesionId',123456,{
+        const sesionId = nanoid(10)
+        await pool.query('UPDATE usuarios SET session_id = $1 WHERE username = $2', [sesionId, usuario])
+
+
+        res.cookie('sesionId',sesionId,{
             httpOnly: true,
             secure: true,
             sameSite: 'lax',
@@ -47,18 +51,20 @@ app.post('/registrar', async (req,res)=>{
         const salt = await bcrypt.genSalt(10);
         const claveHasheada = await bcrypt.hash(pass, salt);
         console.log(claveHasheada)
-        const resultado = await pool.query('INSERT INTO usuarios(username, password_hash) VALUES ($1, $2)', [usuario, claveHasheada])
-        res.redirect('/login')
+        await pool.query('INSERT INTO usuarios(username, password_hash) VALUES ($1, $2)', [usuario, claveHasheada])
+        
+        res.redirect('/login?usuarioregistrado')
     }catch(error){
         // El redirect viene con un status de 302
-        res.redirect('/login')
+        res.redirect('/login?errorenlainsercion')
     }
 })
 
 // Estáticos
 function verificarCookie(req, res, next){
     console.log(req.signedCookies)
-    if(req.cookies.sesionId === '123456'){
+    // Cambio esto para que me deje ingresar a administración
+    if(req.signedCookies.sesionId){
         return next()
     }
     res.redirect('/login?autorizado=false')
@@ -66,4 +72,4 @@ function verificarCookie(req, res, next){
 
 
 app.use('/admin', verificarCookie, express.static(path.resolve('./front')))
-app.use('/login' ,express.static(path.resolve('./login')))
+app.use('/login', express.static(path.resolve('./login')))
